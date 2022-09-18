@@ -1,12 +1,15 @@
 package com.example.orderservice.service;
+import com.example.orderservice.model.Account;
 import com.example.orderservice.model.Order;
 
 import com.example.orderservice.model.PaymentType;
+import com.example.orderservice.model.Product;
 import com.example.orderservice.repository.OrderRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,6 +38,54 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> getAll(){
         return orderRepository.findAll();
     }
+
+    @Override
+    public List<Product> getProductsOfOrder(Long orderId){
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if(orderOptional.isEmpty()){
+            System.out.println("No Order Found by id: "+ orderId );
+            return null;
+        }
+        Order order = orderOptional.get();
+        return order.getProducts();
+    }
+
+    @Override
+    public Order createOrder(Long accountId, List<Product> products){
+        Order order = new Order(accountId,products);
+        // Connect to Account Service and get preferred payment method
+        Account userAccount = restTemplate.getForObject("http://account-service/accounts/" + accountId, Account.class);
+        if (userAccount== null){
+            return null;
+        }
+        for (Product product : products){
+            Boolean isAvailable = restTemplate.getForObject("http://stock-service/stock/" + product.getProductId(), Boolean.class);
+            if (!isAvailable){
+                restTemplate.execute("http://stock-service/stock/add/" + product.getProductId(), HttpMethod.POST,null,null);
+
+                System.out.println("Product not available at the moment .... updating the stock");
+//                throw new RuntimeException("Product " + product.getProductId() + " is not available");
+            }
+        }
+
+        order.setPaymentType(userAccount.getPaymentType());
+        orderRepository.save(order);
+        return order;
+    }
+    @Override
+    public Order addProductToOrder(Long orderId, Product product){
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if(optionalOrder.isEmpty()){
+            System.out.println("No Order Found by id: "+ orderId );
+            throw new RuntimeException("Order " + orderId + " is not available");
+        }
+        Order order = optionalOrder.get();
+        order.addToProductList(product);
+        orderRepository.save(order);
+        return order;
+
+    }
+
 
 
 
@@ -81,12 +132,7 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
-    @Override
-    public Order updateStatus(Long orderId, Status status){
-        Order order = orderRepository.findById(orderId).get();
-        order.setStatus(status);
-        return order;
-    }
+
 
     @Override
     public Order deleteOrder(Long orderId){
@@ -113,25 +159,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(Status.SHIPPED);
         orderRepository.save(order);
         return "Order is Successful!!";
-//        Order order=orderRepository.findById(orderId).get();
-//        PaymentRequest request = new PaymentRequest();
-////        request.setUserId(order.getUserId());
-////        request.setOrderId(orderId.toString());
 
-//        request.setPaymentType(PaymentType.valueOf(paymentType));
-
-//        Double totalPrice = 0.0;
-//        log.info(productService.getProductUri());
-//        for (Orderline orderline : order.getOrderlineList() ) {
-//            Product product = restTemplate.getForObject(productService.getProductUri()+p.getProductId(), Product.class);
-//            totalPrice += product.getPrice() * .getQuantity();
-//        }
-//        request.setBalance(totalPrice);
-
-
-
-
-//        return order;
     }
 
 }

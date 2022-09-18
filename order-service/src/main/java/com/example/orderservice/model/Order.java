@@ -12,15 +12,19 @@ import java.util.List;
 
 @Slf4j
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userId;
+
+    public Order(Long userId, List<Product> products) {
+        this.userId = userId;
+        this.products = products;
+    }
+
+    private Long userId;
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
@@ -30,6 +34,10 @@ public class Order {
 
     @Embedded
     private ShippingAddress shippingAddress;
+
+    public Order() {
+
+    }
 
     public void addToProductList(Product product) {
         products.add(product);
