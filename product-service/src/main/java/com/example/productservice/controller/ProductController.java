@@ -1,7 +1,8 @@
 package com.example.productservice.controller;
 
+import com.example.productservice.model.OrderProduct;
 import com.example.productservice.model.Product;
-import com.example.productservice.service.ProductService;
+import com.example.productservice.service.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
     @Autowired
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @GetMapping
     public ResponseEntity<?> getAll() {
@@ -27,7 +28,7 @@ public class ProductController {
     }
 
     @PostMapping("/order/{id}")
-    public ResponseEntity<?> makeOrder(@PathVariable Long id, @RequestBody List<Product> products) {
+    public ResponseEntity<?> makeOrder(@PathVariable Long id, @RequestBody List<OrderProduct> products) {
         return ResponseEntity.ok(productService.makeOrder(id,products));
     }
 

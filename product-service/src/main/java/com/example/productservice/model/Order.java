@@ -13,7 +13,7 @@ import java.util.List;
 public class Order {
     private Long id;
 
-    public Order(Long userId, List<Product> products) {
+    public Order(Long userId, List<OrderProduct> products) {
         this.userId = userId;
         this.products = products;
     }
@@ -21,14 +21,11 @@ public class Order {
     private Long userId;
     private PaymentType paymentType;
 
-    private List<Product> products = new ArrayList<>();
+    private List<OrderProduct> products = new ArrayList<>();
 
     public Order() {
 
     }
 
-    public void addToProductList(Product product) {
-        products.add(product);
-    }
 
 }

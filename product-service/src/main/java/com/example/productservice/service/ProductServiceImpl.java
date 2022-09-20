@@ -2,7 +2,9 @@ package com.example.productservice.service;
 
 
 import com.example.productservice.model.Order;
+import com.example.productservice.model.OrderProduct;
 import com.example.productservice.model.Product;
+import com.example.productservice.model.Stock;
 import com.example.productservice.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,29 +14,28 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
     private ProductRepository productRepository;
 
-    @Override
     public List<Product> findAllProducts() {
         return productRepository.findAll();
     }
 
-    @Override
     public Product findProductById(Long id) {
         return productRepository.findProductById(id);
     }
 
-    @Override
     public Product addProduct(Product product) {
 
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        Stock stock = new Stock(product.getId(),5);
+        restTemplate.postForObject("http://localhost:9097/stock/create/" + savedProduct.getId(),stock, Order.class);
+        return savedProduct;
     }
 
-    @Override
     public boolean removeProduct(Long productId) {
         Optional<Product> productOptional =productRepository.findById(productId);
         if(productOptional.isPresent()){
@@ -44,7 +45,6 @@ public class ProductServiceImpl implements ProductService{
         return false;
     }
 
-    @Override
     public Product updateProduct(Long productId, Product productBody) {
         Optional<Product> productOptional= productRepository.findById(productId);
         if(productOptional.isPresent()){
@@ -54,8 +54,7 @@ public class ProductServiceImpl implements ProductService{
         return productRepository.save(productBody);
     }
 
-    @Override
-    public Order makeOrder(Long accountId, List<Product> products) {
+    public Order makeOrder(Long accountId, List<OrderProduct> products) {
         return restTemplate.postForObject("http://localhost:9093/orders/create/" + accountId ,products, Order.class);
 
     }

@@ -18,7 +18,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl {
 
     @Autowired
     private OrderRepository orderRepository;
@@ -26,39 +26,39 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Override
     public Order get(Long id){
         return orderRepository.findById(id).get();
     }
 
-    @Override
     public List<Order> getAll(){
         return orderRepository.findAll();
     }
 
-    @Override
-    public List<Product> getProductsOfOrder(Long orderId){
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        if(orderOptional.isEmpty()){
-            System.out.println("No Order Found by id: "+ orderId );
-            return null;
-        }
-        Order order = orderOptional.get();
-        return order.getProducts();
-    }
+//    @Override
+//    public List<Product> getProductsOfOrder(Long orderId){
+//        Optional<Order> orderOptional = orderRepository.findById(orderId);
+//        if(orderOptional.isEmpty()){
+//            System.out.println("No Order Found by id: "+ orderId );
+//            return null;
+//        }
+//        Order order = orderOptional.get();
+//        List<Product> products =new ArrayList<>();
+//        return order.getProducts();
+//    }
 
-    @Override
-    public Order createOrder(Long accountId, List<Product> products){
+    public Order createOrder(Long accountId, List<OrderProduct> products){
         Order order = new Order(accountId,products);
         // Connect to Account Service and get preferred payment method
-        Account userAccount = restTemplate.getForObject("http://account-service/accounts/" + accountId, Account.class);
+        Account userAccount = restTemplate.getForObject("http://localhost:9091/accounts/" + accountId, Account.class);
         if (userAccount== null){
             return null;
         }
-        for (Product product : products){
-            Boolean isAvailable = restTemplate.getForObject("http://stock-service/stock/" + product.getId(), Boolean.class);
+
+        for (OrderProduct product : products){
+            System.out.println(product.getProductId());
+            Boolean isAvailable = restTemplate.getForObject("http://localhost:9097/stock/" + product.getProductId(), Boolean.class);
             if (!isAvailable){
-                restTemplate.execute("http://stock-service/stock/add/" + product.getId(), HttpMethod.POST,null,null);
+                restTemplate.execute("http://localhost:9097/stock/add/" + product.getProductId(), HttpMethod.POST,null,null);
 
                 System.out.println("Product not available at the moment .... updating the stock");
 //                throw new RuntimeException("Product " + product.getProductId() + " is not available");
@@ -69,23 +69,19 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         return order;
     }
-    @Override
-    public Order addProductToOrder(Long orderId, Product product){
-        Optional<Order> optionalOrder = orderRepository.findById(orderId);
-        if(optionalOrder.isEmpty()){
-            System.out.println("No Order Found by id: "+ orderId );
-            throw new RuntimeException("Order " + orderId + " is not available");
-        }
-        Order order = optionalOrder.get();
-        order.addToProductList(product);
-        orderRepository.save(order);
-        return order;
+//    public Order addProductToOrder(Long orderId, Product product){
+//        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+//        if(optionalOrder.isEmpty()){
+//            System.out.println("No Order Found by id: "+ orderId );
+//            throw new RuntimeException("Order " + orderId + " is not available");
+//        }
+//        Order order = optionalOrder.get();
+//        order.addToProductList(product);
+//        orderRepository.save(order);
+//        return order;
+//
+//    }
 
-    }
-
-
-
-    @Override
     public Order addPaymentType(Long orderId, PaymentType paymentType) {
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
         if(optionalOrder.isPresent()){
@@ -98,15 +94,12 @@ public class OrderServiceImpl implements OrderService {
 
 
 
-    @Override
     public Order deleteOrder(Long orderId){
         Order order=orderRepository.findById(orderId).get();
         orderRepository.delete(order);
         return order;
     }
 
-
-    @Override
     public String pay(Long orderId){
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
         if(!optionalOrder.isPresent()){

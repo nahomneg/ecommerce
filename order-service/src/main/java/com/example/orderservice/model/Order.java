@@ -1,9 +1,7 @@
 package com.example.orderservice.model;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -19,7 +17,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Order(Long userId, List<Product> products) {
+    public Order(Long userId, List<OrderProduct> products) {
         this.userId = userId;
         this.products = products;
     }
@@ -30,14 +28,14 @@ public class Order {
 
 
     @OneToMany(cascade = CascadeType.PERSIST)
-    List<Product> products = new ArrayList<>();
+    List<OrderProduct> products = new ArrayList<>();
 
     public Order() {
 
     }
 
-    public void addToProductList(Product product) {
-        products.add(product);
-    }
+//    public void addToProductList(Product product) {
+//        products.add(product);
+//    }
 
 }

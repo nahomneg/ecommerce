@@ -18,7 +18,10 @@ public class StockService {
             Stock stock = optionalStock.get();
             return stock.getLeftItems()>0;
         }
-        throw new RuntimeException("\"No Order Found by id: \"+ orderId ");
+        throw new RuntimeException("\"No Product Found by id: "+productId);
+    }
+    public Stock create(Stock stock){
+        return stockRepository.save(stock);
     }
 
     public String add(Long productId){
@@ -29,7 +32,7 @@ public class StockService {
             stockRepository.save(stock);
             return "Stock updated!!";
         }
-        throw new RuntimeException("\"No Order Found by id: \"+ orderId ");
+        throw new RuntimeException("\"No Product Found by id: "+ productId);
     }
     public String deduct(Long productId){
         Optional<Stock> optionalStock = stockRepository.findByProductId(productId);
