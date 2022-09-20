@@ -49,18 +49,18 @@ public class OrderServiceImpl {
     public Order createOrder(Long accountId, List<OrderProduct> products){
         Order order = new Order(accountId,products);
         // Connect to Account Service and get preferred payment method
-        Account userAccount = restTemplate.getForObject("http://localhost:9091/accounts/" + accountId, Account.class);
+        Account userAccount = restTemplate.getForObject("http://account-service:9091/accounts/" + accountId, Account.class);
         if (userAccount== null){
             return null;
         }
 
         for (OrderProduct product : products){
             System.out.println(product.getProductId());
-            Boolean isAvailable = restTemplate.getForObject("http://localhost:9097/stock/" + product.getProductId(), Boolean.class);
+            Boolean isAvailable = restTemplate.getForObject("http://stock-service:9097/stock/" + product.getProductId(), Boolean.class);
             if (!isAvailable){
-                restTemplate.execute("http://localhost:9097/stock/add/" + product.getProductId(), HttpMethod.POST,null,null);
-
                 System.out.println("Product not available at the moment .... updating the stock");
+                restTemplate.execute("http://stock-service:9097/stock/add/" + product.getProductId(), HttpMethod.POST,null,null);
+
 //                throw new RuntimeException("Product " + product.getProductId() + " is not available");
             }
         }
@@ -111,7 +111,7 @@ public class OrderServiceImpl {
         paymentRequest.setPaymentType(order.getPaymentType());
         paymentRequest.setOrder(order);
         paymentRequest.setUserId(order.getUserId());
-        restTemplate.postForObject("http://localhost:9094/payments/",paymentRequest, String.class);
+        restTemplate.postForObject("http://payment-service:9094/payments/",paymentRequest, String.class);
         orderRepository.save(order);
         return "Order is successful!! Your payment has been made using "+ paymentRequest.getPaymentType();
 

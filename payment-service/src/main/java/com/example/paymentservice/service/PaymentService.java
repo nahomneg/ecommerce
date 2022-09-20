@@ -28,7 +28,7 @@ public class PaymentService {
             restTemplate.postForObject("http://credit-card-service/credit/" ,paymentRequest, String.class);
         }
         else if(paymentType.equals(PaymentType.PAYPAL)){
-            restTemplate.postForObject("http://localhost:9095/paypal/" ,paymentRequest, String.class);
+            restTemplate.postForObject("http://paypal-service:9095/paypal/" ,paymentRequest, String.class);
         }
         else if(paymentType.equals(PaymentType.BANK)){
             restTemplate.postForObject("http://bank-service/bank/" ,paymentRequest, String.class);

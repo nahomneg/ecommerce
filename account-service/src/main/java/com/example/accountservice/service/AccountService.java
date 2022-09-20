@@ -18,10 +18,10 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
     public BankInfo addBankInfo(BankInfo bankInfo, Long id) {
-        return restTemplate.postForObject("http://localhost:9092/bank/" ,bankInfo, BankInfo.class);
+        return restTemplate.postForObject("http://bank-service:9092/bank/" ,bankInfo, BankInfo.class);
     }
     public PayPalInfo addPayPal(PayPalInfo payPalInfo, Long id) {
-        return restTemplate.postForObject("http://localhost:9095/paypal/" ,payPalInfo, PayPalInfo.class);
+        return restTemplate.postForObject("http://paypal-service:9095/paypal/" ,payPalInfo, PayPalInfo.class);
     }
     public List<Account> findAll() {
         return accountRepository.findAll();

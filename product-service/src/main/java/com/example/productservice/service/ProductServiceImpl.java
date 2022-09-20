@@ -32,7 +32,7 @@ public class ProductServiceImpl {
 
         Product savedProduct = productRepository.save(product);
         Stock stock = new Stock(product.getId(),5);
-        restTemplate.postForObject("http://localhost:9097/stock/create/" + savedProduct.getId(),stock, Order.class);
+        restTemplate.postForObject("http://stock-service:9097/stock/create/" + savedProduct.getId(),stock, Order.class);
         return savedProduct;
     }
 
@@ -55,7 +55,7 @@ public class ProductServiceImpl {
     }
 
     public Order makeOrder(Long accountId, List<OrderProduct> products) {
-        return restTemplate.postForObject("http://localhost:9093/orders/create/" + accountId ,products, Order.class);
+        return restTemplate.postForObject("http://order-service:9093/orders/create/" + accountId ,products, Order.class);
 
     }
 
