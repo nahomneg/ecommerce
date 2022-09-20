@@ -11,13 +11,12 @@ import javax.persistence.Id;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long productId;
-    private boolean inStock;
+    private double price;
+    private String name;
+    private String category;
+    private String vendor;
 
 }

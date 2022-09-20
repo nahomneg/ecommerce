@@ -22,7 +22,6 @@ public interface OrderService {
 
     Order addProductToOrder(Long orderId, Product product);
 
-    Order addProductById(Long orderId, Long productId);
     Order addPaymentType(Long orderId, PaymentType paymentType);
     Order deleteOrder(Long orderId);
 

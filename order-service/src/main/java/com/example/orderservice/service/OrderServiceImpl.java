@@ -1,9 +1,6 @@
 package com.example.orderservice.service;
-import com.example.orderservice.model.Account;
-import com.example.orderservice.model.Order;
+import com.example.orderservice.model.*;
 
-import com.example.orderservice.model.PaymentType;
-import com.example.orderservice.model.Product;
 import com.example.orderservice.repository.OrderRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -59,9 +56,9 @@ public class OrderServiceImpl implements OrderService {
             return null;
         }
         for (Product product : products){
-            Boolean isAvailable = restTemplate.getForObject("http://stock-service/stock/" + product.getProductId(), Boolean.class);
+            Boolean isAvailable = restTemplate.getForObject("http://stock-service/stock/" + product.getId(), Boolean.class);
             if (!isAvailable){
-                restTemplate.execute("http://stock-service/stock/add/" + product.getProductId(), HttpMethod.POST,null,null);
+                restTemplate.execute("http://stock-service/stock/add/" + product.getId(), HttpMethod.POST,null,null);
 
                 System.out.println("Product not available at the moment .... updating the stock");
 //                throw new RuntimeException("Product " + product.getProductId() + " is not available");
@@ -88,38 +85,6 @@ public class OrderServiceImpl implements OrderService {
 
 
 
-
-
-
-
-    @Override
-    public Order addProductById(Long orderId,Long productId ) {
-//        Optional<Order> optionalOrder = orderRepository.findById(orderId);
-//        if(!optionalOrder.isPresent()){
-//            System.out.println("No Order Found by id: "+ orderId );
-//            return null;
-//        }
-//        Order order = optionalOrder.get();
-//        if(order.getStatus().equals(Status.DRAFT)){
-//            ProductDTO product1 = restTemplate.getForObject("http://localhost:9021/products/" + product.getProductId(), ProductDTO.class);
-//
-//            if(product1.isInStock()) {
-//                Product product2 = new Product();
-//                product2.setProductId(product.getProductId());
-//                productRepository.save(product2);
-//                order.addToProductList(product2);
-//                return orderRepository.save(order);
-//            } else {
-//                System.out.println("Product out of stock");
-//                return null;
-//            }
-//        }else {
-//            System.out.println("Order status already changed");
-//            return null;
-//        }
-        return null;
-    }
-
     @Override
     public Order addPaymentType(Long orderId, PaymentType paymentType) {
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
@@ -128,8 +93,7 @@ public class OrderServiceImpl implements OrderService {
             order.setPaymentType(paymentType);
             return orderRepository.save(order);
         }
-        System.out.println("No Order Found by id: "+ orderId );
-        return null;
+        throw new RuntimeException("\"No Order Found by id: \"+ orderId ");
     }
 
 
@@ -150,15 +114,13 @@ public class OrderServiceImpl implements OrderService {
             return "Order is Not Successful";
         }
         Order order = optionalOrder.get();
-        order.setStatus(Status.PENDING);
         PaymentRequest paymentRequest = new PaymentRequest();
         paymentRequest.setPaymentType(order.getPaymentType());
-        paymentRequest.setOrderId(order.getId().toString());
+        paymentRequest.setOrderId(order);
         paymentRequest.setUserId(order.getUserId());
-        restTemplate.postForObject("http://localhost:9031/payments/" + order.getPaymentType(),paymentRequest, String.class);
-        order.setStatus(Status.SHIPPED);
+        restTemplate.postForObject("http://payment-service/payments/",paymentRequest, String.class);
         orderRepository.save(order);
-        return "Order is Successful!!";
+        return "Order is successful!!";
 
     }
 

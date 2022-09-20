@@ -32,9 +32,6 @@ public class Order {
     @OneToMany(cascade = CascadeType.PERSIST)
     List<Product> products = new ArrayList<>();
 
-    @Embedded
-    private ShippingAddress shippingAddress;
-
     public Order() {
 
     }
