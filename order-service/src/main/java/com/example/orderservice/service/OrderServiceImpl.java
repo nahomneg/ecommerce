@@ -109,11 +109,11 @@ public class OrderServiceImpl {
         Order order = optionalOrder.get();
         PaymentRequest paymentRequest = new PaymentRequest();
         paymentRequest.setPaymentType(order.getPaymentType());
-        paymentRequest.setOrderId(order);
+        paymentRequest.setOrder(order);
         paymentRequest.setUserId(order.getUserId());
-        restTemplate.postForObject("http://payment-service/payments/",paymentRequest, String.class);
+        restTemplate.postForObject("http://localhost:9094/payments/",paymentRequest, String.class);
         orderRepository.save(order);
-        return "Order is successful!!";
+        return "Order is successful!! Your payment has been made using "+ paymentRequest.getPaymentType();
 
     }
 

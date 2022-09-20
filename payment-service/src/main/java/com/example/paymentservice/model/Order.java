@@ -4,15 +4,13 @@ package com.example.paymentservice.model;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Data
 public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
     public Order(Long userId, List<Product> products) {
