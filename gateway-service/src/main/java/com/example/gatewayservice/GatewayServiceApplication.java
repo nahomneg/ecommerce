@@ -2,28 +2,21 @@ package com.example.gatewayservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.gateway.route.RouteLocator;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+////import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication
+//@EnableEurekaClient
 public class GatewayServiceApplication {
-//    @Bean
-//    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-//        return builder.routes()
-//                .route("r1", r -> r.host("**")
-//                        .and()
-//                        .path("/product")
-//                        .uri("http://localhost:9096/"))
-//                .route(r -> r.host("**.baeldung.com")
-//                        .and()
-//                        .path("/myOtherRouting")
-//                        .filters(f -> f.prefixPath("/myPrefix"))
-//                        .uri("http://othersite.com"))
-//                .build();
-//    }
     public static void main(String[] args) {
         SpringApplication.run(GatewayServiceApplication.class, args);
+    }
+    @LoadBalanced
+    @Bean
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
     }
 
 }
