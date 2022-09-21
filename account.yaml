@@ -2,27 +2,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: paypal-deployment
+  name: account-deployment
 spec:
   selector:
     matchLabels:
-      app: paypal
+      app: account
   replicas: 1
   template:
     metadata:
       labels:
-        app: paypal
+        app: account
     spec:
       containers:
-        - name: paypal
-          image: leonahoms/paypal
+        - name: account
+          image: leonahoms/account
           ports:
-            - containerPort: 9095
+            - containerPort: 9091
           env:   # Setting Environmental Variables
             - name: DB_HOST   # Setting Database host address
-              value: paypaldb
+              value: accountdb
             - name: DB_NAME  # Setting Database name
-              value: paypal
+              value: account
             - name: DB_USERNAME  # Setting Database username
               value: root
             - name: DB_PASSWORD # Setting Database password
@@ -32,12 +32,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: paypal-service
+  name: account-service
 spec:
   ports:
     - protocol: "TCP"
-      port: 9095    # Port inside the cluster
-      targetPort: 9095   # Port exposed to the outside
+      port: 9091    # Port inside the cluster
+      targetPort: 9091   # Port exposed to the outside
   selector:
-    app: paypal
+    app: account
   type: NodePort

@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+spec:
+  selector:
+    matchLabels:
+      app: gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: leonahoms/gateway
+          ports:
+            - containerPort: 8080
+
+---
+# Define a 'Service' To Expose the application
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  ports:
+    - protocol: "TCP"
+      port: 8080    # Port inside the cluster
+      targetPort: 8080   # Port exposed to the outside
+  selector:
+    app: gateway
+  type: NodePort

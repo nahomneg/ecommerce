@@ -1,0 +1,72 @@
+# Define a 'Service' To Expose MySQL to Other Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: productdb
+  labels:
+    app: productdb
+    tier: database
+spec:
+  ports:
+    - port: 3307
+      targetPort: 3307
+  selector:
+    app: productdb
+    tier: database
+  clusterIP: None # DNS is used, so clusterIP is not needed
+
+---
+# Define a 'Persistent Volume Claim'(PVC) for MySQL Storage, dynamically provisioned by cluster
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: productdb-pv-claim # name of PVC essential for identifying the storage data
+  labels:
+    app: productdb
+    tier: database
+spec:
+  accessModes:
+    - ReadWriteOnce   #This specifies the mode of the claim that we are trying to create.
+  resources:
+    requests:
+      storage: 200Mi    #This will tell kubernetes about the amount of space we are trying to claim.
+
+---
+# Deployment specification begins here
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productdb
+  labels:
+    app: productdb
+    tier: database
+spec:
+  selector: # mySQL Pod Should contain same labels
+    matchLabels:
+      app: productdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels: # Must match 'Service' and 'Deployment' selectors
+        app: productdb
+        tier: database
+    spec:
+      containers:
+        - name: productdb
+          image: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: MYSQL_DATABASE
+              value: product
+          ports:
+            - containerPort: 3307
+              name: mysql
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-productdb-storage
+      volumes:
+        - name: mysql-productdb-storage
+          persistentVolumeClaim:
+            claimName: productdb-pv-claim
