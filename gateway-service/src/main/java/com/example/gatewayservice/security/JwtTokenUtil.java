@@ -1,6 +1,5 @@
 package com.example.gatewayservice.security;
 
-import java.security.Key;
 import java.util.Date;
 
 
@@ -9,7 +8,6 @@ import com.example.gatewayservice.exception.JwtTokenIncorrectStructureException;
 import com.example.gatewayservice.exception.JwtTokenMalformedException;
 import com.example.gatewayservice.exception.JwtTokenMissingException;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.impl.crypto.MacProvider;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,31 +21,13 @@ public class JwtTokenUtil {
 
     public String generateToken(String id) {
         Claims claims = Jwts.claims().setSubject(id);
-//        long nowMillis = System.currentTimeMillis();
-//        long expMillis = nowMillis + config.getValidity() * 1000 * 60;
-//        Date exp = new Date(expMillis);
-//
-//        return Jwts.builder().setClaims(claims).setIssuedAt(new Date(nowMillis)).setExpiration(exp)
-//                .signWith(SignatureAlgorithm.HS512, config.getSecret()).compact();
-
         long nowMillis = System.currentTimeMillis();
-        Date now = new Date(nowMillis);
+        long expMillis = nowMillis + config.getValidity() * 1000 * 60;
+        Date exp = new Date(expMillis);
 
-        Date expireDate = new Date(nowMillis);
+        return Jwts.builder().setClaims(claims).setIssuedAt(new Date(nowMillis)).setExpiration(exp)
+                .signWith(SignatureAlgorithm.HS512, config.getSecret()).compact();
 
-        Key key = MacProvider.generateKey();
-
-        JwtBuilder builder = Jwts.builder().setClaims(claims);
-        builder.setSubject(id);
-//        builder.setAudience("users");
-        builder.setIssuedAt(now);
-        builder.setExpiration(expireDate);
-        builder.signWith(SignatureAlgorithm.HS512, key);
-        String compactJws = builder
-                .compact();
-
-
-        return compactJws;
 
     }
 
@@ -57,8 +37,10 @@ public class JwtTokenUtil {
             if (parts.length != 2 || !"Bearer".equals(parts[0])) {
                 throw new JwtTokenIncorrectStructureException("Incorrect Authentication Structure");
             }
-
-            Jwts.parser().setSigningKey(config.getSecret()).parseClaimsJws(parts[1]);
+            System.out.println(Jwts.parser().setSigningKey(config.getSecret()).parseClaimsJws(parts[1]));
+            Jwts.parser().setSigningKey(config.getSecret())
+                    .parseClaimsJws(parts[1])
+            ;
         } catch (SignatureException ex) {
             throw new JwtTokenMalformedException("Invalid JWT signature");
         } catch (MalformedJwtException ex) {
