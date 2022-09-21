@@ -17,7 +17,7 @@ spec:
         - name: gateway
           image: leonahoms/gateway
           ports:
-            - containerPort: 8080
+            - containerPort: 9090
 
 ---
 # Define a 'Service' To Expose the application
@@ -28,8 +28,8 @@ metadata:
 spec:
   ports:
     - protocol: "TCP"
-      port: 8080    # Port inside the cluster
-      targetPort: 8080   # Port exposed to the outside
+      port: 9090    # Port inside the cluster
+      targetPort: 9090   # Port exposed to the outside
   selector:
     app: gateway
   type: NodePort
