@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 
 @RestController
@@ -25,6 +26,9 @@ public class JwtAuthenticationController {
 
     @Autowired
     private final JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public JwtAuthenticationController(JwtTokenUtil jwtTokenUtil) {
         this.jwtTokenUtil = jwtTokenUtil;
@@ -46,8 +50,8 @@ public class JwtAuthenticationController {
 
     private AuthenticationStatus authenticate(String username, String password) {
         AuthenticationStatus status;
-
-        if (!username.equals("ea") && !password.equals("cs544")) {
+        Boolean isUserValid = restTemplate.getForObject("http://account-service:9091/accounts/check/" + username + "/" + password,Boolean.class);
+        if (!isUserValid) {
             status = new AuthenticationStatus(false, "Invalid Username/Password");
         }
         else {

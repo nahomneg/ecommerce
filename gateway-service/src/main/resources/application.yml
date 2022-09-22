@@ -34,7 +34,7 @@
 #  validity: 20
 #  authDisabled: true
 server:
-  port: 9190
+  port: 9090
 spring:
   application:
     name: gateway-service
@@ -44,7 +44,7 @@ spring:
         - id: account-service
           uri: http://account-service:9091
           predicates:
-            - Path=/accounts/**
+            - Path=/api/accounts/**
           filters:
             - AuthenticationFilter
 

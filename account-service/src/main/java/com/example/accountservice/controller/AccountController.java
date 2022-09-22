@@ -19,10 +19,14 @@ public class AccountController {
 
 
     // Get all accounts
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<?> getAll() {
         List<Account> accounts = accountService.findAll();
         return ResponseEntity.ok(accounts);
+    }
+    @GetMapping("/check/{email}/{password}")
+    public Boolean checkUser(@PathVariable String email, @PathVariable String password){
+        return accountService.checkUser(email, password);
     }
 
     //Get account by id
@@ -32,7 +36,7 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<?> createAccount(@RequestBody Account account) {
         Account newAccount = accountService.createAccount(account);
         return new ResponseEntity<>(newAccount, HttpStatus.CREATED);

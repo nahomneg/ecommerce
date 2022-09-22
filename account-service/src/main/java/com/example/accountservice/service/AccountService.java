@@ -50,4 +50,15 @@ public class AccountService {
         }
         return false;
     }
+
+    public Boolean checkUser(String email, String password) {
+        Account account = accountRepository.findAccountByEmail(email);
+        if (account == null){
+            return false;
+        }
+        if (account.getPassword().equals(password)){
+            return true;
+        }
+        return false;
+    }
 }
