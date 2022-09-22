@@ -32,4 +32,4 @@ spec:
       targetPort: 9090   # Port exposed to the outside
   selector:
     app: gateway
-  type: NodePort
+  type: LoadBalancer

@@ -44,7 +44,7 @@ spring:
         - id: account-service
           uri: http://account-service:9091
           predicates:
-            - Path=/api/accounts/**
+            - Path=/accounts/**
           filters:
             - AuthenticationFilter
 
