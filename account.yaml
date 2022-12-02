@@ -7,11 +7,13 @@ spec:
   selector:
     matchLabels:
       app: account
-  replicas: 2
+      version: v1
+  replicas: 1
   template:
     metadata:
       labels:
         app: account
+        version: v1
     spec:
       containers:
         - name: account
@@ -35,9 +37,11 @@ metadata:
   name: account-service
 spec:
   ports:
-    - protocol: "TCP"
+    - name: "acc"
+      protocol: "TCP"
       port: 9091    # Port inside the cluster
       targetPort: 9091   # Port exposed to the outside
   selector:
     app: account
-  type: NodePort
+    version: v1
+  type: ClusterIP

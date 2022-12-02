@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: stock
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -40,4 +40,4 @@ spec:
       targetPort: 9097   # Port exposed to the outside
   selector:
     app: stock
-  type: NodePort
+  type: ClusterIP

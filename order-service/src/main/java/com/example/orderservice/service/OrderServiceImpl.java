@@ -34,17 +34,7 @@ public class OrderServiceImpl {
         return orderRepository.findAll();
     }
 
-//    @Override
-//    public List<Product> getProductsOfOrder(Long orderId){
-//        Optional<Order> orderOptional = orderRepository.findById(orderId);
-//        if(orderOptional.isEmpty()){
-//            System.out.println("No Order Found by id: "+ orderId );
-//            return null;
-//        }
-//        Order order = orderOptional.get();
-//        List<Product> products =new ArrayList<>();
-//        return order.getProducts();
-//    }
+
 
     public Order createOrder(Long accountId, List<OrderProduct> products){
         Order order = new Order(accountId,products);

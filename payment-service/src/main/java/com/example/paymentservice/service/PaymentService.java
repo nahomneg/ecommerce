@@ -31,7 +31,7 @@ public class PaymentService {
             restTemplate.postForObject("http://paypal-service:9095/paypal/" ,paymentRequest, String.class);
         }
         else if(paymentType.equals(PaymentType.BANK)){
-            restTemplate.postForObject("http://bank-service/bank/" ,paymentRequest, String.class);
+            restTemplate.postForObject("http://bank-service:9092/bank/" ,paymentRequest, String.class);
         }
         else{
             return "Please set payment type";

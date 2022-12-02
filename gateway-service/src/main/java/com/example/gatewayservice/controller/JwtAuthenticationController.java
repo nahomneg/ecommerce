@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.example.gatewayservice.models.AuthenticationStatus;
 import com.example.gatewayservice.models.ErrorResponseDto;
-import com.example.gatewayservice.models.JwtRequest;
+import com.example.gatewayservice.models.AuthenticationRequest;
 import com.example.gatewayservice.models.JwtResponse;
 import com.example.gatewayservice.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +34,8 @@ public class JwtAuthenticationController {
         this.jwtTokenUtil = jwtTokenUtil;
     }
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) {
-        AuthenticationStatus status = authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
+        AuthenticationStatus status = authenticate(authenticationRequest);
 
         if (!status.getIsAuthenticated()) {
             List<String> details = new ArrayList<>();
@@ -43,14 +43,14 @@ public class JwtAuthenticationController {
             ErrorResponseDto error = new ErrorResponseDto(new Date(), HttpStatus.UNAUTHORIZED.value(), "UNAUTHORIZED", details, "uri");
             return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
         }
-
-        final String token = jwtTokenUtil.generateToken(authenticationRequest.getUsername());
+        final String token = jwtTokenUtil.generateToken(authenticationRequest.getEmail());
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    private AuthenticationStatus authenticate(String username, String password) {
+    private AuthenticationStatus authenticate(AuthenticationRequest authRequest ) {
         AuthenticationStatus status;
-        Boolean isUserValid = restTemplate.getForObject("http://account-service:9091/accounts/check/" + username + "/" + password,Boolean.class);
+
+        Boolean isUserValid = restTemplate.postForObject("http://account-service:9091/accounts/check/" ,authRequest,Boolean.class);
         if (!isUserValid) {
             status = new AuthenticationStatus(false, "Invalid Username/Password");
         }

@@ -1,6 +1,7 @@
 package com.example.accountservice.controller;
 
 import com.example.accountservice.model.Account;
+import com.example.accountservice.model.AuthenticationRequest;
 import com.example.accountservice.model.BankInfo;
 import com.example.accountservice.model.PayPalInfo;
 import com.example.accountservice.service.AccountService;
@@ -24,9 +25,9 @@ public class AccountController {
         List<Account> accounts = accountService.findAll();
         return ResponseEntity.ok(accounts);
     }
-    @GetMapping("/check/{email}/{password}")
-    public Boolean checkUser(@PathVariable String email, @PathVariable String password){
-        return accountService.checkUser(email, password);
+    @GetMapping("/check}")
+    public Boolean checkUser(@RequestBody AuthenticationRequest authenticationRequest){
+        return accountService.checkUser(authenticationRequest.getEmail(), authenticationRequest.getPassword());
     }
 
     //Get account by id

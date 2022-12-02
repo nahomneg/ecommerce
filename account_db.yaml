@@ -5,14 +5,17 @@ metadata:
   name: accountdb
   labels:
     app: accountdb
+    version: v1
     tier: database
 spec:
   ports:
     - port: 3307
+      name: sql
       targetPort: 3307
   selector:
     app: accountdb
     tier: database
+    version: v1
   clusterIP: None # DNS is used, so clusterIP is not needed
 
 ---
@@ -24,6 +27,7 @@ metadata:
   labels:
     app: accountdb
     tier: database
+    version: v1
 spec:
   accessModes:
     - ReadWriteOnce   #This specifies the mode of the claim that we are trying to create.
@@ -39,11 +43,13 @@ metadata:
   name: accountdb
   labels:
     app: accountdb
+    version: v1
     tier: database
 spec:
   selector: # mySQL Pod Should contain same labels
     matchLabels:
       app: accountdb
+      version: v1
   strategy:
     type: Recreate
   template:
@@ -51,6 +57,7 @@ spec:
       labels: # Must match 'Service' and 'Deployment' selectors
         app: accountdb
         tier: database
+        version: v1
     spec:
       containers:
         - name: accountdb
@@ -70,3 +77,26 @@ spec:
         - name: mysql-accountdb-storage
           persistentVolumeClaim:
             claimName: accountdb-pv-claim
+#---
+##policy
+#apiVersion: security.istio.io/v1beta1
+#kind: PeerAuthentication
+#metadata:
+#  name: "mysql-peer-mlts"
+#  namespace: "default"
+#spec:
+#  selector:
+#    matchLabels:
+#      app: accountdb
+#  mtls:
+#    mode: STRICT
+#---
+#apiVersion: networking.istio.io/v1alpha3
+#kind: DestinationRule
+#metadata:
+#  name: mysql-mtls-dr
+#spec:
+#  host: accountdb    # The name of *your* K8s Service
+#  trafficPolicy:
+#    tls:
+#      mode: ISTIO_MUTUAL

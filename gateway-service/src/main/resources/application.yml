@@ -1,38 +1,4 @@
-#server:
-#  port: 9090
-#spring:
-#  application:
-#    name: gateway-service
-#  cloud:
-#    gateway:
-#      routes:
-#        - id: account-service
-#          uri: http://account-service:9001
-#          predicates:
-#              - Path=/accounts/**
-#          filters:
-#            - AuthenticationFilter
-#
-#        - id: order-service
-#          uri: lb://order-service
-#          predicates:
-#            - Path=/orders/**
-#          filters:
-#            - AuthenticationFilter
-#
-#        - id: product-service
-#          uri: lb://product-service
-#          predicates:
-#            - Path=/products/**
-#          filters:
-#            - AuthenticationFilter
-#logging:
-#  level:
-#    '[org.springframework.cloud.gateway]': TRACE
-#jwt:
-#  secret: testing
-#  validity: 20
-#  authDisabled: true
+
 server:
   port: 9090
 spring:

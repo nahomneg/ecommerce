@@ -14,4 +14,5 @@ public class OrderProduct {
     @Id
     @GeneratedValue
     private Long id;
+    private Integer quantity;
 }
