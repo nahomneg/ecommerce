@@ -1,10 +1,11 @@
 # Microservices Based Spring Boot
 
+## Medium articles on the project
+https://medium.com/@nahomnegdem/spring-boot-microservices-to-build-an-ecommerce-application-12e05f58e895
 
 
 ## How to run the project
 
-We attached a video demo for our project
 - Make sure you have docker setup on your machine
 - Make sure you have kubernetes setup on your machine
 
@@ -19,6 +20,6 @@ You don't need to build the container as it is already on docker hub.
 
 >> http://localhost:9090/accounts/register create an account
 
->> http://localhost:9090/authenticate using username and password of the created account using Post meethod to generate TWT token
+>> http://localhost:9090/authenticate using username and password of the created account using Post method to generate JWT token
 
-### for every request, make sure you use the generated token before except get all products
+- for every request, make sure you use the generated token before except get all products
